@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>database_access.html</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #d5b778;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bababa;}
+.s3 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+database_access.html</font>
+</center></td></tr></table>
+<pre><span class="s0">&lt;!DOCTYPE </span><span class="s2">html</span><span class="s0">&gt;</span>
+<span class="s0">&lt;html&gt;</span>
+<span class="s0">&lt;head&gt;</span>
+    <span class="s0">&lt;title&gt;</span><span class="s1">Database Access</span><span class="s0">&lt;/title&gt;</span>
+<span class="s0">&lt;/head&gt;</span>
+<span class="s0">&lt;body&gt;</span>
+    <span class="s0">&lt;h1&gt;</span><span class="s1">TaxRecords Database</span><span class="s0">&lt;/h1&gt;</span>
+    <span class="s0">&lt;table </span><span class="s2">border</span><span class="s3">=&quot;1&quot;</span><span class="s0">&gt;</span>
+        <span class="s0">&lt;thead&gt;</span>
+            <span class="s0">&lt;tr&gt;</span>
+                <span class="s0">&lt;th&gt;</span><span class="s1">ID</span><span class="s0">&lt;/th&gt;</span>
+                <span class="s0">&lt;th&gt;</span><span class="s1">Company</span><span class="s0">&lt;/th&gt;</span>
+                <span class="s0">&lt;th&gt;</span><span class="s1">Amount</span><span class="s0">&lt;/th&gt;</span>
+                <span class="s0">&lt;th&gt;</span><span class="s1">Tax Rate</span><span class="s0">&lt;/th&gt;</span>
+                <span class="s0">&lt;th&gt;</span><span class="s1">Tax Due</span><span class="s0">&lt;/th&gt;</span>
+                <span class="s0">&lt;th&gt;</span><span class="s1">Payment Date</span><span class="s0">&lt;/th&gt;</span>
+                <span class="s0">&lt;th&gt;</span><span class="s1">Status</span><span class="s0">&lt;/th&gt;</span>
+                <span class="s0">&lt;th&gt;</span><span class="s1">Due Date</span><span class="s0">&lt;/th&gt;</span>
+            <span class="s0">&lt;/tr&gt;</span>
+        <span class="s0">&lt;/thead&gt;</span>
+        <span class="s0">&lt;tbody&gt;</span>
+            <span class="s1">{% for record in records %}</span>
+            <span class="s0">&lt;tr&gt;</span>
+                <span class="s0">&lt;td&gt;</span><span class="s1">{{ record['id'] }}</span><span class="s0">&lt;/td&gt;</span>
+                <span class="s0">&lt;td&gt;</span><span class="s1">{{ record['company'] }}</span><span class="s0">&lt;/td&gt;</span>
+                <span class="s0">&lt;td&gt;</span><span class="s1">{{ record['amount'] }}</span><span class="s0">&lt;/td&gt;</span>
+                <span class="s0">&lt;td&gt;</span><span class="s1">{{ record['tax_rate'] or 'N/A' }}</span><span class="s0">&lt;/td&gt;</span>
+                <span class="s0">&lt;td&gt;</span><span class="s1">{{ record['tax_due'] or 'N/A' }}</span><span class="s0">&lt;/td&gt;</span>
+                <span class="s0">&lt;td&gt;</span><span class="s1">{{ record['payment_date'] or 'N/A' }}</span><span class="s0">&lt;/td&gt;</span>
+                <span class="s0">&lt;td&gt;</span><span class="s1">{{ record['status'] }}</span><span class="s0">&lt;/td&gt;</span>
+                <span class="s0">&lt;td&gt;</span><span class="s1">{{ record['due_date'] }}</span><span class="s0">&lt;/td&gt;</span>
+            <span class="s0">&lt;/tr&gt;</span>
+            <span class="s1">{% endfor %}</span>
+        <span class="s0">&lt;/tbody&gt;</span>
+    <span class="s0">&lt;/table&gt;</span>
+<span class="s0">&lt;/body&gt;</span>
+<span class="s0">&lt;/html&gt;</span>
+</pre>
+</body>
+</html>
