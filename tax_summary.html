@@ -1,143 +1,84 @@
+<!DOCTYPE html>
 <html>
 <head>
-<title>tax_summary.html</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<style type="text/css">
-.s0 { color: #d5b778;}
-.s1 { color: #bcbec4;}
-.s2 { color: #bababa;}
-.s3 { color: #6aab73;}
-.s4 { color: #7a7e85;}
-</style>
+    <title>Tax Summary</title>
+    <style>
+        body { font-family: Georgia, sans-serif; }
+        table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 10px; text-align: center; }
+        th { background-color: #f4f4f4; }
+    </style>
+    <script>
+        async function fetchSummary() {
+            const dueDate = document.getElementById('due_date').value;
+            const taxRate = document.getElementById('tax_rate').value;
+
+            if (!taxRate || isNaN(taxRate) || taxRate < 0 || taxRate > 1) {
+                alert("Please enter a valid tax rate between 0.00 and 1.00 (e.g., 0.06 for 6%).");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/tax/summary?due_date=${dueDate}&tax_rate=${taxRate}`);
+                if (!response.ok) throw new Error("Failed to fetch data.");
+
+                const data = await response.json();
+
+                const tableBody = document.getElementById('summary-table-body');
+                tableBody.innerHTML = ''; // Clear previous table rows
+
+                data.records.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.company}</td>
+                        <td>${record.amount}</td>
+                        <td>${record.payment_date || 'N/A'}</td>
+                        <td>${record.status}</td>
+                        <td>${record.due_date}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                document.getElementById('total-amount').textContent = data.total_amount.toFixed(2);
+                document.getElementById('tax-due').textContent = data.tax_due.toFixed(2);
+                document.getElementById('tax-rate').textContent = (data.tax_rate * 100).toFixed(2) + '%';
+            } catch (error) {
+                alert("Failed to fetch summary data.");
+            }
+        }
+    </script>
 </head>
-<body bgcolor="#1e1f22">
-<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
-<tr><td><center>
-<font face="Arial, Helvetica" color="#000000">
-tax_summary.html</font>
-</center></td></tr></table>
-<pre><span class="s0">&lt;!DOCTYPE </span><span class="s2">html</span><span class="s0">&gt;</span>
-<span class="s0">&lt;html&gt;</span>
-<span class="s0">&lt;head&gt;</span>
-    <span class="s0">&lt;title&gt;</span><span class="s1">Tax Summary</span><span class="s0">&lt;/title&gt;</span>
-    <span class="s0">&lt;style&gt;</span>
-        <span class="s1">body {</span>
-            <span class="s1">font-family: Georgia, sans-serif;</span>
-            <span class="s1">margin: 20px;</span>
-        <span class="s1">}</span>
-        <span class="s1">label {</span>
-            <span class="s1">font-weight: bold;</span>
-        <span class="s1">}</span>
-        <span class="s1">input, select, button {</span>
-            <span class="s1">margin: 10px 0;</span>
-            <span class="s1">padding: 5px;</span>
-        <span class="s1">}</span>
-        <span class="s1">table {</span>
-            <span class="s1">width: 100%;</span>
-            <span class="s1">border-collapse: collapse;</span>
-            <span class="s1">margin-top: 20px;</span>
-        <span class="s1">}</span>
-        <span class="s1">table, th, td {</span>
-            <span class="s1">border: 1px solid #ccc;</span>
-        <span class="s1">}</span>
-        <span class="s1">th, td {</span>
-            <span class="s1">padding: 10px;</span>
-            <span class="s1">text-align: center;</span>
-        <span class="s1">}</span>
-        <span class="s1">th {</span>
-            <span class="s1">background-color: #f4f4f4;</span>
-        <span class="s1">}</span>
-        <span class="s1">.loading {</span>
-            <span class="s1">font-size: 16px;</span>
-            <span class="s1">color: #555;</span>
-            <span class="s1">margin-top: 10px;</span>
-        <span class="s1">}</span>
-    <span class="s0">&lt;/style&gt;</span>
-    <span class="s0">&lt;script&gt;</span>
-        <span class="s1">async function fetchSummary() {</span>
-            <span class="s1">const dueDate = document.getElementById('due_date').value;</span>
-            <span class="s1">const taxRate = document.getElementById('tax_rate').value;</span>
-
-            <span class="s1">if (!taxRate || isNaN(taxRate) || taxRate &lt; 0 || taxRate &gt; 1) {</span>
-                <span class="s1">alert(&quot;Please enter a valid tax rate between 0.00 and 1.00 (e.g., 0.06 for 6%).&quot;);</span>
-                <span class="s1">return;</span>
-            <span class="s1">}</span>
-
-            <span class="s1">try {</span>
-                <span class="s1">document.getElementById('loading').style.display = 'block'; // Show loading indicator</span>
-                <span class="s1">const response = await fetch(`/tax/summary?due_date=${dueDate}&amp;tax_rate=${taxRate}`);</span>
-                <span class="s1">if (!response.ok) throw new Error(&quot;Failed to fetch data.&quot;);</span>
-
-                <span class="s1">const data = await response.json();</span>
-
-                <span class="s1">const tableBody = document.getElementById('summary-table-body');</span>
-                <span class="s1">const totalAmount = document.getElementById('total-amount');</span>
-                <span class="s1">const taxDue = document.getElementById('tax-due');</span>
-                <span class="s1">const taxRateDisplay = document.getElementById('tax-rate');</span>
-
-                <span class="s1">tableBody.innerHTML = ''; // Clear previous table rows</span>
-                <span class="s1">data.records.forEach(record =&gt; {</span>
-                    <span class="s1">const row = document.createElement('tr');</span>
-                    <span class="s1">row.innerHTML = `</span>
-                        <span class="s1">&lt;td&gt;${record.company}&lt;/td&gt;</span>
-                        <span class="s1">&lt;td&gt;${record.amount}&lt;/td&gt;</span>
-                        <span class="s1">&lt;td&gt;${record.payment_date || 'N/A'}&lt;/td&gt;</span>
-                        <span class="s1">&lt;td&gt;${record.status}&lt;/td&gt;</span>
-                        <span class="s1">&lt;td&gt;${record.due_date}&lt;/td&gt;</span>
-                    <span class="s1">`;</span>
-                    <span class="s1">tableBody.appendChild(row);</span>
-                <span class="s1">});</span>
-
-                <span class="s1">totalAmount.textContent = data.total_amount.toFixed(2);</span>
-                <span class="s1">taxDue.textContent = data.tax_due.toFixed(2);</span>
-                <span class="s1">taxRateDisplay.textContent = (data.tax_rate * 100).toFixed(2) + '%';</span>
-            <span class="s1">} catch (error) {</span>
-                <span class="s1">console.error(&quot;Error:&quot;, error);</span>
-                <span class="s1">alert(&quot;Failed to fetch summary data. Please try again.&quot;);</span>
-            <span class="s1">} finally {</span>
-                <span class="s1">document.getElementById('loading').style.display = 'none'; // Hide loading indicator</span>
-            <span class="s1">}</span>
-        <span class="s1">}</span>
-    <span class="s0">&lt;/script&gt;</span>
-<span class="s0">&lt;/head&gt;</span>
-<span class="s0">&lt;body&gt;</span>
-    <span class="s0">&lt;h1&gt;</span><span class="s1">Tax Summary</span><span class="s0">&lt;/h1&gt;</span>
-    <span class="s0">&lt;form </span><span class="s2">onsubmit</span><span class="s3">=&quot;event.preventDefault(); fetchSummary();&quot;</span><span class="s0">&gt;</span>
-        <span class="s0">&lt;label </span><span class="s2">for</span><span class="s3">=&quot;due_date&quot;</span><span class="s0">&gt;</span><span class="s1">Select Due Date:</span><span class="s0">&lt;/label&gt;</span>
-        <span class="s0">&lt;select </span><span class="s2">id</span><span class="s3">=&quot;due_date&quot; </span><span class="s2">required</span><span class="s0">&gt;</span>
-            <span class="s1">{% for date in due_dates %}</span>
-            <span class="s0">&lt;option </span><span class="s2">value</span><span class="s3">=&quot;{{ date }}&quot;</span><span class="s0">&gt;</span><span class="s1">{{ date }}</span><span class="s0">&lt;/option&gt;</span>
-            <span class="s1">{% endfor %}</span>
-        <span class="s0">&lt;/select&gt;</span>
-        <span class="s0">&lt;br&gt;</span>
-        <span class="s0">&lt;label </span><span class="s2">for</span><span class="s3">=&quot;tax_rate&quot;</span><span class="s0">&gt;</span><span class="s1">Enter Tax Rate (e.g., 0.06 for 6%):</span><span class="s0">&lt;/label&gt;</span>
-        <span class="s0">&lt;input </span><span class="s2">type</span><span class="s3">=&quot;text&quot; </span><span class="s2">id</span><span class="s3">=&quot;tax_rate&quot; </span><span class="s2">placeholder</span><span class="s3">=&quot;Enter tax rate&quot; </span><span class="s2">required</span><span class="s0">&gt;</span>
-        <span class="s0">&lt;br&gt;</span>
-        <span class="s0">&lt;button </span><span class="s2">type</span><span class="s3">=&quot;submit&quot;</span><span class="s0">&gt;</span><span class="s1">Filter</span><span class="s0">&lt;/button&gt;</span>
-    <span class="s0">&lt;/form&gt;</span>
-
-    <span class="s0">&lt;p </span><span class="s2">id</span><span class="s3">=&quot;loading&quot; </span><span class="s2">class</span><span class="s3">=&quot;loading&quot; </span><span class="s2">style</span><span class="s3">=&quot;display:none;&quot;</span><span class="s0">&gt;</span><span class="s1">Loading summary...</span><span class="s0">&lt;/p&gt;</span>
-
-    <span class="s0">&lt;h2&gt;</span><span class="s1">Summary Details</span><span class="s0">&lt;/h2&gt;</span>
-    <span class="s0">&lt;table </span><span class="s2">border</span><span class="s3">=&quot;1&quot;</span><span class="s0">&gt;</span>
-        <span class="s0">&lt;thead&gt;</span>
-            <span class="s0">&lt;tr&gt;</span>
-                <span class="s0">&lt;th&gt;</span><span class="s1">Company</span><span class="s0">&lt;/th&gt;</span>
-                <span class="s0">&lt;th&gt;</span><span class="s1">Amount</span><span class="s0">&lt;/th&gt;</span>
-                <span class="s0">&lt;th&gt;</span><span class="s1">Payment Date</span><span class="s0">&lt;/th&gt;</span>
-                <span class="s0">&lt;th&gt;</span><span class="s1">Status</span><span class="s0">&lt;/th&gt;</span>
-                <span class="s0">&lt;th&gt;</span><span class="s1">Due Date</span><span class="s0">&lt;/th&gt;</span>
-            <span class="s0">&lt;/tr&gt;</span>
-        <span class="s0">&lt;/thead&gt;</span>
-        <span class="s0">&lt;tbody </span><span class="s2">id</span><span class="s3">=&quot;summary-table-body&quot;</span><span class="s0">&gt;</span>
-            <span class="s4">&lt;!-- Populated dynamically --&gt;</span>
-        <span class="s0">&lt;/tbody&gt;</span>
-    <span class="s0">&lt;/table&gt;</span>
-    <span class="s0">&lt;p&gt;&lt;strong&gt;</span><span class="s1">Total Amount:</span><span class="s0">&lt;/strong&gt; </span><span class="s1">$</span><span class="s0">&lt;span </span><span class="s2">id</span><span class="s3">=&quot;total-amount&quot;</span><span class="s0">&gt;</span><span class="s1">0</span><span class="s0">&lt;/span&gt;&lt;/p&gt;</span>
-    <span class="s0">&lt;p&gt;&lt;strong&gt;</span><span class="s1">Tax Rate:</span><span class="s0">&lt;/strong&gt; &lt;span </span><span class="s2">id</span><span class="s3">=&quot;tax-rate&quot;</span><span class="s0">&gt;</span><span class="s1">0%</span><span class="s0">&lt;/span&gt;&lt;/p&gt;</span>
-    <span class="s0">&lt;p&gt;&lt;strong&gt;</span><span class="s1">Tax Due:</span><span class="s0">&lt;/strong&gt; </span><span class="s1">$</span><span class="s0">&lt;span </span><span class="s2">id</span><span class="s3">=&quot;tax-due&quot;</span><span class="s0">&gt;</span><span class="s1">0</span><span class="s0">&lt;/span&gt;&lt;/p&gt;</span>
-<span class="s0">&lt;/body&gt;</span>
-<span class="s0">&lt;/html&gt;</span>
-</pre>
+<body>
+    <h1>Tax Summary</h1>
+    <form onsubmit="event.preventDefault(); fetchSummary();">
+        <label for="due_date">Select Due Date:</label>
+        <select id="due_date" required>
+            <option value="">-- Select --</option>
+            {% for date in due_dates %}
+            <option value="{{ date }}">{{ date }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="tax_rate">Enter Tax Rate (e.g., 0.06 for 6%):</label>
+        <input type="text" id="tax_rate" placeholder="Enter tax rate" required>
+        <br>
+        <button type="submit">Filter</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Company</th>
+                <th>Amount</th>
+                <th>Payment Date</th>
+                <th>Status</th>
+                <th>Due Date</th>
+            </tr>
+        </thead>
+        <tbody id="summary-table-body">
+            <!-- Populated dynamically -->
+        </tbody>
+    </table>
+    <p><strong>Total Amount:</strong> $<span id="total-amount">0</span></p>
+    <p><strong>Tax Rate:</strong> <span id="tax-rate">0%</span></p>
+    <p><strong>Tax Due:</strong> $<span id="tax-due">0</span></p>
 </body>
 </html>
